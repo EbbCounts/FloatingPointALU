@@ -31,34 +31,29 @@ module ALU(
     output [31:0] result
     );
     
-    reg [31:0] AddSubResult;
-    reg [31:0] MultResult;
-    reg [31:0] DivResult;
+    wire [31:0] AddSubResult;
+    wire [31:0] MultResult;
+    wire [31:0] DivResult;
     
      FloatingAddition AddSub (.A(A),.B(B),.result(AddSubResult));
-     FloatingAddition Mult (.A(A),.B(B),.result(MultResult));
-     FloatingAddition Div (.A(A),.B(B),.result(DivResult));
+     FloatingMultiplication Mult (.A(A),.B(B),.result(MultResult));
+     FloatingDivision Div (.A(A),.B(B),.result(DivResult));
      
      reg [31:0] tempresult;
     
     //opcodes
     //add = 00, mul = 01, div = 10
     
+    // Opcode logic to select the result
     always @(*) begin
-        if (opcode == 2'b00) 
-            //addsub
-            tempresult <= AddSubResult;
-        else if (opcode == 2'b01) 
-            //mult
-            tempresult <= MultResult;
-        else if (opcode == 2'b10)
-            //div
-            tempresult <= DivResult;
-        else 
-            //
-            tempresult <= 4'h0000;
+        case (opcode)
+            2'b00: tempresult = AddSubResult;  // Addition
+            2'b01: tempresult = MultResult;   // Multiplication
+            2'b10: tempresult = DivResult;    // Division
+            default: tempresult = 32'h00000000; // Default case
+        endcase
     end
-        
-    assign result = tempresult;
     
+    assign result = tempresult;
+        
 endmodule
